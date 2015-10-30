@@ -3,6 +3,21 @@ describe('filters.js', function () {
         module('app.filters');
     });
 
+    describe('/ fullName',function(){
+        it('/ both',inject(function($filter){
+            expect($filter('fullName')({fname:'Bob',sname:'User'})).toBe('Bob User');
+        }));
+        it('/ first',inject(function($filter){
+            expect($filter('fullName')({fname:'Bob'})).toBe('Bob');
+        }));
+        it('/ last',inject(function($filter){
+            expect($filter('fullName')({sname:'User'})).toBe('User');
+        }));
+        it('/ neither',inject(function($filter){
+            expect($filter('fullName')({})).toBe(undefined);
+        }));
+    });
+
     describe('/ trim',function(){
         it('/ string',inject(function($filter){
             expect($filter('trim')(' Foo')).toBe('Foo');

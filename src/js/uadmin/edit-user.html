@@ -1,0 +1,38 @@
+<div class="clearfix" ng-class="{'modal-header': isModal}">
+    <a ng-if="isModal" href class="pull-right" ng-click="dismiss()"><i class="fa fa-times-circle-o fa-2x"></i></a>
+    <h2>{{title}}</h2>
+</div>
+<div class="clearfix" ng-class="{'modal-body': isModal}">
+    <form name="editUserForm">
+        <div class="form-group">
+            <label for="email">E-mail</label>
+            <input  ng-if="me.isAdmin()" type="email" class="form-control" id="email" placeholder="Email" ng-model="user.email" required existing-emails="existingEmails">
+            <span ng-if="!me.isAdmin()"><br />{{user.email}}</span>
+        </div>
+        <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" class="form-control" id="firstName" placeholder="First Name" ng-model="user.fname" required>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Last Name" ng-model="user.sname" required>
+        </div>
+        <div class="checkbox" ng-show="user._id">
+            <label>
+                <input type="checkbox" ng-model="resetPassword"> Reset Password
+            </label>
+        </div>
+        <password-confirm user="user" ng-if="resetPassword"></password-confirm>
+        <ul class="list-inline pull-right">
+            <li ng-if="isModal"><a class="btn btn-default" ng-click="dismiss()">Cancel</a></li>
+            <li><a class="btn btn-default" ng-click="ok()" ng-disabled="editUserForm.$invalid">OK</a></li>
+        </ul>
+        <p class="text-danger" ng-if="editUserForm.$error.password[0].$viewValue">
+            Password must be at least 8 characters long and contain at least one character from all four character classes; upper, lower, numeric and symbols.
+        </p>
+        <p class="text-danger" ng-if="user.secret && user.secret !== user.$$secret">Password and password confirmation do not match.</p>
+        <p class="text-danger" ng-if="editUserForm.$error.existingEmails[0].$viewValue">
+            There is already a user with the e-mail address {{editUserForm.$error.existingEmails[0].$viewValue}}
+        </p>
+    </form>
+</div>

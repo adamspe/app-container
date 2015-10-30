@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <span ng-if="!contents.noIcon"><i class="fa fa-{{contents.icon||'exclamation-triangle'}} fa-{{contents.iconSize||'3'}}x"></i></span>
+    <h4>{{contents.question}}</h4>
+</div>
+<div class="modal-body">
+    <p ng-if="contents.warning" class="text-danger">Warning: {{contents.warning}}</p>
+    <p ng-if="contents.more">{{contents.more}}</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="yes()">{{contents.yesText||'Yes'}}</button>
+    <button class="btn btn-default" ng-click="no()">{{contents.noText||'No'}}</button>
+</div>

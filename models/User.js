@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
         fname: { type: String, trim: true},
         sname: { type: String, trim: true},
         secret: { type: String, required: true},
-        email: { type: String, required: true},
+        email: { type: String, required: true, unique: true},
         level: { type: Number, required: true, min: 0, max: 1}
     }),
     ADMIN = 0,

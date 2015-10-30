@@ -1,6 +1,16 @@
 angular.module('app.filters',[
 ])
-.filter('linkFormat',function(){
+.filter('fullName',[function(){
+    return function(user) {
+        if(user && (user.fname || user.sname)){
+            if(user.fname && user.sname) {
+                return user.fname + ' ' + user.sname;
+            }
+            return user.fname ? user.fname : user.sname;
+        }
+    };
+}])
+.filter('linkFormat',[function(){
     var TOKEN_RE = /\{([^\}]+)\}/g;
     return function(input,format){
         if(format && input) {
@@ -14,8 +24,8 @@ angular.module('app.filters',[
             return result;
         }
     };
-})
-.filter('faFileTypeClass',function(){
+}])
+.filter('faFileTypeClass',[function(){
     var TEXT = /^text\//;
     return function(input) {
         if(typeof(input) === 'string') {
@@ -27,21 +37,21 @@ angular.module('app.filters',[
             return 'fa-file-o';
         }
     };
-})
-.filter('cssClassify',function(){
+}])
+.filter('cssClassify',[function(){
     return function(input) {
         if(typeof(input) === 'string') {
             return input.trim().toLowerCase().replace(/\s+/g,'-');
         }
         return input;
     };
-})
-.filter('yesNo',function(){
+}])
+.filter('yesNo',[function(){
     return function(input) {
         return input ? 'Yes' : 'No';
     };
-})
-.filter('gte',function(){
+}])
+.filter('gte',[function(){
     return function(input,num) {
         if(!num || !angular.isArray(input)) {
             return input;
@@ -50,8 +60,8 @@ angular.module('app.filters',[
             return i >= num;
         });
     };
-})
-.filter('lte',function(){
+}])
+.filter('lte',[function(){
     return function(input,num) {
         if(!num || !angular.isArray(input)) {
             return input;
@@ -60,16 +70,16 @@ angular.module('app.filters',[
             return i <= num;
         });
     };
-})
-.filter('trim',function(){
+}])
+.filter('trim',[function(){
     return function(input) {
         if(angular.isString(input)) {
             return input.trim();
         }
         return input;
     };
-})
-.filter('ellipses',function(){
+}])
+.filter('ellipses',[function(){
     return function(input) {
         var maxLen = arguments.length == 2 ? arguments[1] : 55;
         if(typeof(input) == 'string' && input.length > maxLen) {
@@ -77,4 +87,4 @@ angular.module('app.filters',[
         }
         return input;
     };
-});
+}]);

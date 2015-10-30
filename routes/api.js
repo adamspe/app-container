@@ -8,7 +8,7 @@ module.exports = function(app) {
     var resources = [];
     // users
     var users = new Resource({
-            rel: prefix+'users',
+            rel: prefix+'user',
             model: require('../models/User'),
             $select: '-secret',
         });

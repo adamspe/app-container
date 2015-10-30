@@ -1,0 +1,21 @@
+<table class="table table-striped user-administration" ng-if="me.isAdmin()">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>E-Mail</th>
+            <th class="text-right"><a href ng-click="create()" uib-tooltip="New User" tooltip-placement="left"><i class="fa fa-plus"></i></a></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="user in users">
+            <td>{{user | fullName}}</td>
+            <td><a ng-href="mailto:{{user.email}}">{{user.email}}</a></td>
+            <td class="text-right">
+                <ul class="list-inline">
+                    <li><a href ng-click="edit(user)" uib-tooltip="Edit User" tooltip-placement="left"><i class="fa fa-pencil"></i></a></li>
+                    <li><a href ng-click="delete(user)" uib-tooltip="Delete User" tooltip-placement="left"><i class="fa fa-times"></i></a></li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
