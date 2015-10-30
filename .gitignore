@@ -1,0 +1,7 @@
+node_modules/
+bower_components/
+coverage/
+# contents of public are compiled
+public/app
+
+.sass-cache/

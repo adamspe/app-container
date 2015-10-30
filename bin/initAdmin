@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+var pkg = require('../package.json'),
+    dbInfo = require('./dbInfo.js'),
+    mongoose = require('mongoose'),
+    mongoUrl = 'mongodb://'+dbInfo.host+':'+dbInfo.port+'/'+dbInfo.db,
+    argv = require('minimist')(process.argv.slice(2));
+
+if(!argv.email || !argv.pass || !argv.fname || !argv.sname) {
+    console.error('initAdmin --email joe@nowhere.net --pass secret --fname Joe --sname Admin');
+    process.exit(1);
+}
+
+mongoose.connect(mongoUrl,function(err) {
+    if(err) {
+        console.error(err);
+        return;
+    }
+
+    var User = require('../models/User'),
+        admin = new User({
+            email: argv.email,
+            fname: argv.fname,
+            sname: argv.sname,
+            secret: argv.pass,
+            level: 0
+        });
+    admin.save(function(err,saved) {
+        if(err) {
+            console.error(err);
+            process.exit(1);
+        }
+        console.log('created',saved);
+        process.exit(0);
+    });
+});

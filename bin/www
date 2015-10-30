@@ -1,0 +1,17 @@
+#!/usr/bin/env nodemon --ignore src/ --ignore public/app/
+// #!/usr/bin/env node-debug
+var pkg = require('../package.json'),
+    debug = require('debug')(pkg.name),
+    dbInfo = require('./dbInfo.js');
+
+require('../app')(dbInfo).then(
+    function(app) {
+        var server = app.listen((process.env.PORT || 3000),function(){
+            debug('Express server listening on port ' + server.address().port);
+        });
+    },
+    function(err) {
+        console.error(err);
+        process.exit(1);
+    }
+);
