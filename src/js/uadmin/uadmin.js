@@ -12,7 +12,7 @@ angular.module('app.uadmin',[
         $uibModalInstance.close($scope.user);
     };
 }])
-.directive('userProfile',['$log','User',function($log,User){
+.directive('userProfile',['$log','User','NotificationService',function($log,User,NotificationService){
     return {
         restrict: 'E',
         templateUrl: 'js/uadmin/edit-user.html',
@@ -23,7 +23,9 @@ angular.module('app.uadmin',[
                 $scope.title = 'Profile';
                 $scope.ok = function() {
                     angular.extend(me,$scope.user);
-                    me.$update({id: me._id},$log.info,$log.error);
+                    me.$update({id: me._id},function(){
+                        NotificationService.addInfo('Profile updated');
+                    },NotificationService.addError);
                 };
             });
         }
@@ -76,7 +78,7 @@ angular.module('app.uadmin',[
         }
     };
 }])
-.directive('userAdministration',['$log','$uibModal','User','DialogService',function($log,$uibModal,User,DialogService){
+.directive('userAdministration',['$log','$uibModal','User','DialogService','NotificationService',function($log,$uibModal,User,DialogService,NotificationService){
     return {
         restrict: 'E',
         templateUrl: 'js/uadmin/user-administration.html',
@@ -101,7 +103,10 @@ angular.module('app.uadmin',[
                             existingEmails: function() { return $scope.users.map(function(u) { return u.email; }).concat([$scope.me.email]); }
                         }
                     }).result.then(function(user){
-                        user.$save(list,$log.error);
+                        user.$save(function(){
+                            NotificationService.addInfo('User created.');
+                            list();
+                        },NotificationService.addError);
                     });
                 };
                 $scope.edit = function(user) {
@@ -123,7 +128,9 @@ angular.module('app.uadmin',[
                         }
                     }).result.then(function(updates){
                         angular.extend(user,updates);
-                        user.$update({id: user._id},$log.info,$log.error);
+                        user.$update({id: user._id},function(){
+                            NotificationService.addInfo('User updated.');
+                        },NotificationService.addError);
                     });
                 };
                 $scope.delete = function(user) {
@@ -131,7 +138,10 @@ angular.module('app.uadmin',[
                         question: 'Are you sure you want to delete '+user.email+'?',
                         warning: 'This cannot be undone.'
                     }).then(function(){
-                        user.$remove({id:user._id},list,$log.error);
+                        user.$remove({id:user._id},function(){
+                            NotificationService.addInfo('User deleted.');
+                            list();
+                        },NotificationService.addError);
                     });
                 };
             }

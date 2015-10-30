@@ -62,4 +62,46 @@ angular.module('app.services',[
         }
     };
     return service;
+}])
+.directive('notificationArea',['NotificationService',function(NotificationService){
+    return {
+        restrict: 'E',
+        templateUrl: 'js/services/notification-area.html',
+        link: function($scope) {
+            $scope.alerts = NotificationService.getAlerts();
+            $scope.closeAlert = NotificationService.closeAlert;
+        }
+    };
+}])
+.factory('NotificationService',['$log','$timeout','$sce',function($log,$timeout,$sce){
+    var alerts = [];
+    var closeAlert = function(index){
+        alerts.splice(index,1);
+    };
+    var service = {
+        closeAlert: closeAlert,
+        getAlerts: function() {
+            return alerts;
+        },
+        addError: function(error) {
+            var errMessage = error && error.statusText ? error.statusText : '';
+            if(error && error.data && error.data.message) {
+                errMessage += ' : '+error.data.message;
+            }
+            alerts.push ({type:'danger',msg:$sce.trustAsHtml(errMessage)});
+        },
+        addInfo: function (message) {
+            message = $sce.trustAsHtml(message);
+            var ttl = 5000;
+            if ( arguments.length > 1 ) { ttl = arguments[1]; }
+            var index = (alerts.push({type:'success',msg:message})-1);
+            if ( ttl > 0 ) {
+              $timeout(function(){closeAlert(index);},ttl);
+            }
+        },
+        clear: function() {
+          alerts.length = 0;
+        }
+    };
+    return service;
 }]);
