@@ -17,6 +17,11 @@
             <label for="lastName">Last name</label>
             <input type="text" class="form-control" id="lastName" placeholder="Last Name" ng-model="user.sname" required>
         </div>
+        <div class="checkbox" ng-show="isModal">
+            <label>
+                <input type="checkbox" ng-model="isAdmin"> Administrator
+            </label>
+        </div>
         <div class="checkbox" ng-show="user._id">
             <label>
                 <input type="checkbox" ng-model="resetPassword"> Reset Password

@@ -8,6 +8,10 @@ angular.module('app.uadmin',[
     $scope.existingEmails = existingEmails;
     $scope.dismiss = $uibModalInstance.dismiss;
     $scope.resetPassword = theUser._id ? false : true;
+    $scope.isAdmin = theUser.isAdmin();
+    $scope.$watch('isAdmin',function(){
+        $scope.user[$scope.isAdmin ? 'makeAdmin' : 'makeNormal']();
+    });
     $scope.ok = function() {
         $uibModalInstance.close($scope.user);
     };
@@ -98,7 +102,7 @@ angular.module('app.uadmin',[
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
-                            theUser: function() { return new User({level: 1}); },
+                            theUser: function() { return new User({roles: ['user']}); },
                             title: function() { return 'Create User'; },
                             existingEmails: function() { return $scope.users.map(function(u) { return u.email; }).concat([$scope.me.email]); }
                         }
@@ -118,7 +122,7 @@ angular.module('app.uadmin',[
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
-                            theUser: function() { return angular.extend({},user); },
+                            theUser: function() { return angular.extend(new User(),user); },
                             title: function() { return 'Edit User'; },
                             existingEmails: function() {
                                 return $scope.users.filter(function(u){

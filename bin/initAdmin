@@ -22,7 +22,7 @@ mongoose.connect(mongoUrl,function(err) {
             fname: argv.fname,
             sname: argv.sname,
             secret: argv.pass,
-            level: 0
+            roles: ['user','admin']
         });
     admin.save(function(err,saved) {
         if(err) {

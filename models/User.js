@@ -1,15 +1,17 @@
 var mongoose = require('mongoose'),
     bcrypt = require('bcryptjs'),
     salt = bcrypt.genSaltSync(10),
+    canned_roles = {
+        admin: 'admin',
+        user: 'user'
+    },
     schema = mongoose.Schema({
         fname: { type: String, trim: true},
         sname: { type: String, trim: true},
         secret: { type: String, required: true},
         email: { type: String, required: true, unique: true},
-        level: { type: Number, required: true, min: 0, max: 1}
+        roles: { type: [String], default: [canned_roles.user], required: true }
     }),
-    ADMIN = 0,
-    NORMAL = 1,
     CRYPT_PFX = 'CRYPT:';
 
 function isEncrypted(secret) {
@@ -29,8 +31,12 @@ console.log('sans pfx',this.secret.substring(CRYPT_PFX.length));
            bcrypt.compareSync(pass, this.secret.substring(CRYPT_PFX.length));
 };
 
+schema.methods.isUserInRole = function(role) {
+    return this.roles.indexOf(role) !== -1;
+};
+
 schema.methods.isAdmin = function() {
-    return this.level === ADMIN;
+    return this.isUserInRole(canned_roles.admin);
 };
 
 schema.pre('save',function(next){

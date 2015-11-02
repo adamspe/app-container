@@ -28,8 +28,20 @@ angular.module('app.services',[
 .service('User',['$appService',function($appService) {
     var User = $appService('/api/user/:id'),
         me;
+    // the server side uses a role array but for the purposes
+    // of the starter app dumbing this down to admin/non-admin.
     User.prototype.isAdmin = function() {
-        return this.level === 0;
+        return this.roles && this.roles.length && this.roles.indexOf('admin') !== -1;
+    };
+    User.prototype.makeAdmin = function() {
+        if(!this.isAdmin()){
+            this.roles.push('admin');
+        }
+    };
+    User.prototype.makeNormal = function() {
+        if(this.isAdmin()) {
+            this.roles.splice(this.roles.indexOf('admin'),1);
+        }
     };
     User.me = function() {
         if(me) {
