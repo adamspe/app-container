@@ -5,7 +5,8 @@
   "author": "adamspe@gmail.com",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "make test"
   },
   "dependencies": {
     "bcryptjs": "^2.3.0",
@@ -49,6 +50,8 @@
     "matchdep": "*",
     "mime-types": "^2.0.4",
     "path": "^0.4.9",
+    "should": "^7.1.1",
+    "supertest": "^1.1.0",
     "util": "^0.10.3",
     "wrench": "^1.5.8"
   }

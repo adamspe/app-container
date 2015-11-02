@@ -24,8 +24,6 @@ schema.virtual('fullName').get(function () {
 });
 
 schema.methods.validatePassword = function(pass) {
-console.log('secret',this.secret);
-console.log('sans pfx',this.secret.substring(CRYPT_PFX.length));
     return this.secret &&
            isEncrypted(this.secret) &&
            bcrypt.compareSync(pass, this.secret.substring(CRYPT_PFX.length));
@@ -40,7 +38,6 @@ schema.methods.isAdmin = function() {
 };
 
 schema.pre('save',function(next){
-    console.log(this);
     // setting or changing secret, encrypt it.
     if(this.secret && !isEncrypted(this.secret)) {
         this.secret = CRYPT_PFX+bcrypt.hashSync(this.secret, salt);

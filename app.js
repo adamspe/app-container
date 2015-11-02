@@ -41,7 +41,7 @@ module.exports = function(dbInfo) {
             cookie: {
                 maxAge: (sessionTtl*1000)
             },
-            secret: 'frff-internal',
+            secret: 'application-secret',
             resave: false,
             saveUninitialized: true,
             store: new MongoStore({
