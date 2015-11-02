@@ -1,15 +1,13 @@
 var mongoose = require('mongoose'),
     should = require('should'),
-    supertest = require('supertest'),
-    dbInfo = require('../../bin/dbInfo.js'),
-    app = require('../../app');
+    supertest = require('supertest');
 
 var util = {
     api: undefined,
     User: require('../../models/User'),
     debug: require('debug')('app-test'),
     before: function(done) {
-        app(dbInfo).then(function(app){
+        require('../../app')().then(function(app){
             util.api = supertest.agent(app);
             done();
         },function(err){
