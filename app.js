@@ -16,15 +16,13 @@ var express = require('express'),
  * @param  {Object} dbInfo keys; host,port,db
  * @return {Object} A promise that will resolve to the app or be rejected with an error.
  */
-module.exports = function(dbInfo) {
+module.exports = function() {
     var app = express(),
-        def = q.defer(),
-        mongoUrl = 'mongodb://'+dbInfo.host+':'+dbInfo.port+'/'+dbInfo.db;
+        def = q.defer();
     function setup(err) {
         if(err) {
             return def.reject(err);
         }
-        debug('Connected to MongoDb "%s"',mongoUrl);
         // view engine setup
         app.set('views', path.join(__dirname, 'views'));
         app.set('view engine', 'jade');
@@ -90,6 +88,6 @@ module.exports = function(dbInfo) {
 
         def.resolve(app);
     }
-    mongoose.connect(mongoUrl,setup);
+    require('./db')(setup);
     return def.promise;
 };

@@ -1,21 +1,12 @@
 #!/usr/bin/env node
-var pkg = require('../package.json'),
-    dbInfo = require('./dbInfo.js'),
-    mongoose = require('mongoose'),
-    mongoUrl = 'mongodb://'+dbInfo.host+':'+dbInfo.port+'/'+dbInfo.db,
-    argv = require('minimist')(process.argv.slice(2));
+var argv = require('minimist')(process.argv.slice(2));
 
 if(!argv.email || !argv.pass || !argv.fname || !argv.sname) {
     console.error('initAdmin --email joe@nowhere.net --pass secret --fname Joe --sname Admin [--admin]');
     process.exit(1);
 }
 
-mongoose.connect(mongoUrl,function(err) {
-    if(err) {
-        console.error(err);
-        return;
-    }
-
+require('../db')(function(){
     var User = require('../models/User'),
         admin = new User({
             email: argv.email,
@@ -33,3 +24,4 @@ mongoose.connect(mongoUrl,function(err) {
         process.exit(0);
     });
 });
+
