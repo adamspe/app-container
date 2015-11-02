@@ -6,7 +6,7 @@ var pkg = require('../package.json'),
     argv = require('minimist')(process.argv.slice(2));
 
 if(!argv.email || !argv.pass || !argv.fname || !argv.sname) {
-    console.error('initAdmin --email joe@nowhere.net --pass secret --fname Joe --sname Admin');
+    console.error('initAdmin --email joe@nowhere.net --pass secret --fname Joe --sname Admin [--admin]');
     process.exit(1);
 }
 
@@ -22,7 +22,7 @@ mongoose.connect(mongoUrl,function(err) {
             fname: argv.fname,
             sname: argv.sname,
             secret: argv.pass,
-            roles: ['user','admin']
+            roles: (argv.admin ? ['user','admin'] : ['user'])
         });
     admin.save(function(err,saved) {
         if(err) {

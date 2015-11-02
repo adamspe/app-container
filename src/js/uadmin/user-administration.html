@@ -3,6 +3,7 @@
         <tr>
             <th>Name</th>
             <th>E-Mail</th>
+            <th>Administrator</th>
             <th class="text-right"><a href ng-click="create()" uib-tooltip="New User" tooltip-placement="left"><i class="fa fa-plus"></i></a></th>
         </tr>
     </thead>
@@ -10,6 +11,7 @@
         <tr ng-repeat="user in users">
             <td>{{user | fullName}}</td>
             <td><a ng-href="mailto:{{user.email}}">{{user.email}}</a></td>
+            <td><i ng-if="user.isAdmin()" class="fa fa-check"></i></td>
             <td class="text-right">
                 <ul class="list-inline">
                     <li><a href ng-click="edit(user)" uib-tooltip="Edit User" tooltip-placement="left"><i class="fa fa-pencil"></i></a></li>
