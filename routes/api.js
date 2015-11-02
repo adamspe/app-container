@@ -33,6 +33,28 @@ module.exports = function(app) {
             return superFind.apply(self,arguments);
         };
     })(users);
+
+    // only administrators can create and delete users.
+    function adminOnly(self,superFunc) {
+        return function(req,res) {
+            if(!req.user.isAdmin()) {
+                return Resource.sendError(res,403,'Forbidden');
+            }
+            superFunc.apply(self,arguments);
+        };
+    }
+    users.create = adminOnly(users,users.create);
+    users.delete = adminOnly(users,users.delete);
+
+    users.update = (function(self,superFunc) {
+        return function(req,res) {
+            if(!req.user.isAdmin() && !_.isEqual(req.user.roles,req.body.roles)) {
+                console.error('User %s attempted to update roles to \'%s\'',req.user.email,req.body.roles);
+                return Resource.sendError(res,403,'Forbidden');
+            }
+            superFunc.apply(self,arguments);
+        }
+    })(users,users.update)
     resources.push(users);
 
     // ADDITIONAL RESOURCES HERE
