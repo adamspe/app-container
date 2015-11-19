@@ -1,8 +1,9 @@
-var router = require('express').Router();
+var pkg = require('../package.json'),
+    router = require('express').Router();
 
 router.get('/', function(req, res) {
   res.render('index', {
-    title: 'Starter App',
+    title: pkg.name,
     user: req.user,
     session: req.session
   });

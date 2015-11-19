@@ -22,6 +22,7 @@ module.exports = function(c) {
         },c),
         app = express(),
         def = q.defer();
+    app.set('env',config.dev ? 'development': 'production');
     function setup(err) {
         if(err) {
             return def.reject(err);
@@ -32,7 +33,7 @@ module.exports = function(c) {
 
         // uncomment after placing your favicon in /public
         //app.use(favicon(__dirname + '/favicon.ico'));
-        if(config.dev) {
+        if (app.get('env') === 'development') {
             app.use(logger('dev'));
         }
         app.use(bodyParser.json());
@@ -69,8 +70,7 @@ module.exports = function(c) {
 
         // error handlers
 
-        // development error handler
-        // will print stacktrace
+        // development error handler will print stacktrace
         if (app.get('env') === 'development') {
             app.use(function(err, req, res, next) {
                 res.status(err.status || 500);
@@ -81,8 +81,7 @@ module.exports = function(c) {
             });
         }
 
-        // production error handler
-        // no stacktraces leaked to user
+        // production error handler no stacktraces leaked to user
         app.use(function(err, req, res, next) {
             res.status(err.status || 500);
             res.render('error', {
