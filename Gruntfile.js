@@ -221,7 +221,7 @@ module.exports = function(grunt){
     grunt.registerTask('server',function() {
         if(!server){
             grunt.task.run('watch');
-            server = grunt.util.spawn({cmd:'./bin/www',opts:{
+            server = grunt.util.spawn({cmd:'./bin/dev',opts:{
                 stdio: 'inherit'
             }});
         }

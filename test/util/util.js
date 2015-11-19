@@ -1,4 +1,5 @@
-var mongoose = require('mongoose'),
+var pkg = require('../../package.json'),
+    mongoose = require('mongoose'),
     should = require('should'),
     supertest = require('supertest');
 
@@ -7,7 +8,12 @@ var util = {
     User: require('../../models/User'),
     debug: require('debug')('app-test'),
     before: function(done) {
-        require('../../app')().then(function(app){
+        require('../../app')({
+            db: {
+                db: pkg.name+'-test',
+                config: require('../../db.json')
+            }
+        }).then(function(app){
             util.api = supertest.agent(app);
             done();
         },function(err){

@@ -57,6 +57,17 @@ module.exports = function(app) {
     })(users,users.update)
     resources.push(users);
 
+    if(!process.env.TestEnv) {
+        // require all api calls to supply the token (generated on a per login basis in /auth.js)
+        app.all('/api/*',function(req,res,next){
+            debug('CSRF server:\'%s\' client:\'%s\'', req.session.csrfToken, req.headers['x-csrf-token']);
+            if(req.session.csrfToken !== req.headers['x-csrf-token']) {
+                return Resource.sendError(res,403,'Forbidden');
+            }
+            next();
+        });
+    }
+
     // ADDITIONAL RESOURCES HERE
 
     // setup routers

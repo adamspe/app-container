@@ -1,13 +1,28 @@
-#!/usr/bin/env nodemon --ignore src/ --ignore public/app/
-// #!/usr/bin/env node-debug
 var pkg = require('../package.json'),
-    debug = require('debug')(pkg.name);
+    debug = require('debug')(pkg.name),
+    argv = require('minimist')(process.argv.slice(2));
 
-require('../app')().then(
+if(typeof(argv.https) === 'undefined' && typeof(argv.http) === 'undefined') {
+    argv.http = true;
+}
+
+require('../app')({}).then(
     function(app) {
-        var server = app.listen((process.env.PORT || 3000),function(){
-            debug('Express server listening on port ' + server.address().port);
-        });
+        if(argv.http) {
+            var http = require('http').createServer(app).listen((process.env.PORT || 8080),'0.0.0.0',function(){
+                console.log('Listening for HTTP requests on %s',http.address().port);
+            });
+        }
+        if(argv.https) {
+            var fs = require('fs'),
+                https_opts = {
+                    key: fs.readFileSync(pkg.name+'-key.pem'),
+                    cert: fs.readFileSync(pkg.name+'-cert.pem')
+                },
+                https = require('https').createServer(https_opts,app).listen((process.env.SSL_PORT || 8443),'0.0.0.0',function(){
+                    console.log('Listening for HTTPS requests on %s',https.address().port);
+                });
+        }
     },
     function(err) {
         console.error(err);

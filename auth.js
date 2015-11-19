@@ -2,6 +2,7 @@ var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     User = require('./models/User'),
     debug = require('debug')('auth'),
+    uuid = require('node-uuid'),
     loginRouter = require('express').Router();
 
 module.exports = function(app) {
@@ -33,10 +34,12 @@ module.exports = function(app) {
                 if(!user) {
                     return done(null,false,{ message: 'Unknown username or password.'});
                 }
-                if(!user.validatePassword(password)) {
-                    return done(null, false, { message: 'Unknown username or password.' });
-                }
-                return done(null,user);
+                user.validatePassword(password,function(err,res){
+                    if(!res) {
+                        return done(null, false, { message: 'Unknown username or password.' });
+                    }
+                    return done(null,user);
+                });
             });
         }
     ));
@@ -57,13 +60,20 @@ module.exports = function(app) {
     );
 
     app.get('/logout', function(req, res){
+      if(req.session) {
+        delete req.session.csrfToken;
+        debug('dropped CSRF token for user with id \'%s\'', (req.user ? req.user._id.toString() : undefined));
+      }
       req.logout();
       res.redirect('/');
     });
 
     app.all('*',function(req,res,next){
         if(req.user){
-            debug('user',req.user);
+            if(req.user && !req.session.csrfToken) {
+              req.session.csrfToken = uuid.v4();
+              debug('generated new CSRF token \'%s\' for user widh id \'%s\'', req.session.csrfToken, req.user._id.toString());
+            }
             next();
         } else {
             res.redirect('/login');

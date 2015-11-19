@@ -5,3 +5,5 @@ coverage/
 public/app
 
 .sass-cache/
+bin/*.pem
+db.json

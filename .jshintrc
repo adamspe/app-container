@@ -17,6 +17,9 @@
     "topojson": false,
     "google": false,
     "console": false,
+    "chrome": false,
+
+    "csrfToken": false,
 
     // grunt
     "require"    : false,

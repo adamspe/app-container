@@ -16,8 +16,11 @@ var express = require('express'),
  * @param  {Object} dbInfo keys; host,port,db
  * @return {Object} A promise that will resolve to the app or be rejected with an error.
  */
-module.exports = function() {
-    var app = express(),
+module.exports = function(c) {
+    var config = _.extend({
+            dev: false,
+        },c),
+        app = express(),
         def = q.defer();
     function setup(err) {
         if(err) {
@@ -28,8 +31,10 @@ module.exports = function() {
         app.set('view engine', 'jade');
 
         // uncomment after placing your favicon in /public
-        //app.use(favicon(__dirname + '/public/favicon.ico'));
-        app.use(logger('dev'));
+        //app.use(favicon(__dirname + '/favicon.ico'));
+        if(config.dev) {
+            app.use(logger('dev'));
+        }
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(cookieParser());
@@ -88,6 +93,6 @@ module.exports = function() {
 
         def.resolve(app);
     }
-    require('./db')(setup);
+    require('./db')(setup,config.db);
     return def.promise;
 };

@@ -7,7 +7,7 @@ block content
         if messages && messages.error
             p.text-danger= messages.error[0]
 
-        div.login.well
+        div.login.well.clearfix
             form(name='login',action='/login',method='post')
                 div.form-group
                     label(for='username').
@@ -17,4 +17,5 @@ block content
                     label(for='password').
                         Password
                     input.form-control(type='password',id='password',name='password',placeholder='Password')
-                input(class='btn btn-default',type='submit',value='Login')
+                input(class='btn btn-default pull-right',type='submit',value='Login')
+

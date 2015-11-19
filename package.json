@@ -22,6 +22,7 @@
     "minimist": "^1.1.1",
     "mongoose": "^4.0.7",
     "morgan": "~1.3.0",
+    "node-uuid": "^1.4.7",
     "odata-resource": "0.1.x",
     "passport": "^0.2.2",
     "passport-local": "^1.0.0",
