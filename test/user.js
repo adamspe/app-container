@@ -3,6 +3,7 @@ var should = require('should'),
     _ = require('lodash');
 
 describe('User Permissions',function(){
+    var admin,joe;
 
     before(function(done){
         util.before(function(){
@@ -23,6 +24,8 @@ describe('User Permissions',function(){
                     throw err;
                 }
                 util.debug('created users',created);
+                admin = created[0];
+                joe = created[1];
                 done();
             });
         });
@@ -90,6 +93,12 @@ describe('User Permissions',function(){
         it('unacceptable update',function(done){
             util.api.put(me._links.self)
                 .send(_.extend({},me,{roles: ['user','admin']}))
+                .expect(403,done);
+        });
+        // cannot update another user
+        it('update another',function(done){
+            util.api.put('/api/user/'+admin._id)
+                .send({secret: 'newpassword',roles:joe.roles})
                 .expect(403,done);
         });
     });

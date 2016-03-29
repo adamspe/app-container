@@ -52,6 +52,10 @@ module.exports = function(app) {
                 console.error('User %s attempted to update roles to \'%s\'',req.user.email,req.body.roles);
                 return Resource.sendError(res,403,'Forbidden');
             }
+            if(!req.user.isAdmin() && req.user._id.toString() != req._resourceId) {
+                console.error('User %s attempted to update another user with id \'%s\'',req.user.email,req._resourceId);
+                return Resource.sendError(res,403,'Forbidden');
+            }
             superFunc.apply(self,arguments);
         }
     })(users,users.update)
