@@ -1,5 +1,5 @@
 {
-  "name": "service-runner",
+  "name": "app-service",
   "version": "0.0.0",
   "description": "Wrapper for running basic services on top of mongo",
   "main": "index.js",
