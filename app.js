@@ -6,60 +6,55 @@ var express = require('express'),
     User = require('./User'),
     q = require('q'),
     _ = require('lodash'),
-    debug = require('debug')('app-service');
+    debug = require('debug')('app-container');
 
 /**
  * @param  {Object} c App configuration.
- * @return {Object} A promise that will resolve to the app or be rejected with an error.
+ * @return {Object} The app object.  If there is an error connecting to Mongo the process will exit.
  */
 module.exports = function(c) {
     var config = _.extend({},c),
-        app = express(),
-        def = q.defer();
-    function setup(err) {
-        if(err) {
-            return def.reject(err);
-        }
+        app = express();
 
-        app.use(require('morgan')('combined'));
+    require('./db')(config.db);
 
-        var bodyParser = require('body-parser');
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(require('morgan')('combined'));
 
-        app.use(require('cookie-parser')());
+    var bodyParser = require('body-parser');
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
 
-        debug('session setup');
-        var sessionTtl = (14 * 24 * 60 * 60); // 14 days
-        app.use(session({
-            cookie: {
-                maxAge: (sessionTtl*1000)
-            },
-            secret: 'application-secret',
-            resave: false,
-            saveUninitialized: true,
-            store: new MongoStore({
-                mongooseConnection: mongoose.connection,
-                ttl:  sessionTtl
-            })
-        }));
+    app.use(require('cookie-parser')());
 
-        debug('passport setup');
-        app.use(passport.initialize());
-        app.use(passport.session());
+    debug('session setup');
+    var sessionTtl = (14 * 24 * 60 * 60); // 14 days
+    app.use(session({
+        cookie: {
+            maxAge: (sessionTtl*1000)
+        },
+        secret: 'application-secret',
+        resave: false,
+        saveUninitialized: true,
+        store: new MongoStore({
+            mongooseConnection: mongoose.connection,
+            ttl:  sessionTtl
+        })
+    }));
 
-        passport.serializeUser(function(user, done) { done(null, user._id); });
+    debug('passport setup');
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-        passport.deserializeUser(function(id, done) {
-            debug('looking user by id %s',id);
-            User.findById(id,function(err,user){
-                done(err,user);
-            });
+    passport.serializeUser(function(user, done) { done(null, user._id); });
+
+    passport.deserializeUser(function(id, done) {
+        debug('looking user by id %s',id);
+        User.findById(id,function(err,user){
+            done(err,user);
         });
+    });
 
-        debug('setup complete');
-        def.resolve(app);
-    }
-    require('./db')(setup,config.db);
-    return def.promise;
+    debug('setup complete');
+
+    return app;
 };

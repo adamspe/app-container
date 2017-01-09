@@ -1,10 +1,14 @@
 {
-  "name": "app-service",
+  "name": "app-container",
   "version": "1.0.0",
   "description": "Wrapper for running basic services on top of mongo",
   "main": "index.js",
   "author": "adamspe@gmail.com",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "/Users/adamspe/mapping-server/repos/app-container.git"
+  },
   "dependencies": {
     "bcryptjs": "^2.3.0",
     "body-parser": "~1.8.1",
