@@ -4,7 +4,6 @@ var prefix = '/api/v1/',
     _ = require('lodash'),
     debug = require('debug')('api');
 
-console.log('user-api #1');
 var users = new Resource({
         rel: prefix+'user',
         model: require('./User'),
@@ -59,5 +58,5 @@ users.update = (function(self,superFunc) {
         superFunc.apply(self,arguments);
     }
 })(users,users.update);
-console.log('user-api #end');
+
 module.exports = users;

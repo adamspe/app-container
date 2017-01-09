@@ -50,7 +50,6 @@ module.exports.userResource = function(version) {
  */
 module.exports.addResource = function(app,resource) {
     var Resource = require('odata-resource'),
-        dev = app.get('env') === 'development',
         router = resource.initRouter();
     router.use(function(err,req,res,next){
         console.error(err);

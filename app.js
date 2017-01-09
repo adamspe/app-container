@@ -13,12 +13,9 @@ var express = require('express'),
  * @return {Object} A promise that will resolve to the app or be rejected with an error.
  */
 module.exports = function(c) {
-    var config = _.extend({
-            dev: false,
-        },c),
+    var config = _.extend({},c),
         app = express(),
         def = q.defer();
-    app.set('env',config.dev ? 'development': 'production');
     function setup(err) {
         if(err) {
             return def.reject(err);
@@ -51,15 +48,13 @@ module.exports = function(c) {
         app.use(passport.initialize());
         app.use(passport.session());
 
-        passport.serializeUser(function(user, done) {
-          done(null, user._id);
-        });
+        passport.serializeUser(function(user, done) { done(null, user._id); });
 
         passport.deserializeUser(function(id, done) {
-          debug('looking user by id %s',id);
-          User.findById(id,function(err,user){
-            done(err,user);
-          });
+            debug('looking user by id %s',id);
+            User.findById(id,function(err,user){
+                done(err,user);
+            });
         });
 
         debug('setup complete');
