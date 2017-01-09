@@ -1,7 +1,8 @@
-var pkg = require('./package.json'),
-    debug = require('debug')('db'),
+var debug = require('debug')('db'),
     mongoose = require('mongoose'),
     _ = require('lodash');
+
+mongoose.Promise = require('q').Promise;
 
 module.exports = function(next,overrides){
     if(mongoose.connection.readyState) {
@@ -11,19 +12,17 @@ module.exports = function(next,overrides){
     var config = {
         host: (process.env.MONGO_HOST || 'localhost'),
         port: (process.env.MONGO_PORT || 27017),
-        db: (process.env.MONGO_DB || pkg.name),
-        options: require('./db.json')
+        db: (process.env.MONGO_DB || 'app-db'),
     };
     if(overrides) {
         _.extend(config,overrides);
     }
     config.uri = 'mongodb://'+config.host+':'+config.port+'/'+config.db;
-    mongoose.connect(config.uri,config.options,function(err) {
-        if(err) {
-            console.error(err);
-            process.exit(1);
-        }
-        debug('Connected to MongoDb "%s"',config.uri);
+    debug('Attempting connection to "%s"',config.uri);
+    mongoose.connect(config.uri,config.options).then(function(err) {
+        debug('Connected to MongoDb');
         next();
+    },function(err){
+        next(err);
     })
 };

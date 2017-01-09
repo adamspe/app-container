@@ -3,14 +3,13 @@ var express = require('express'),
     MongoStore = require('connect-mongo')(session),
     mongoose = require('mongoose'),
     passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy,
     User = require('./User'),
     q = require('q'),
     _ = require('lodash'),
-    debug = require('debug')('app');
+    debug = require('debug')('app-service');
 
 /**
- * @param  {Object} dbInfo keys; host,port,db
+ * @param  {Object} c App configuration.
  * @return {Object} A promise that will resolve to the app or be rejected with an error.
  */
 module.exports = function(c) {
@@ -24,8 +23,7 @@ module.exports = function(c) {
         if(err) {
             return def.reject(err);
         }
-        // uncomment after placing your favicon in /public
-        //app.use(favicon(__dirname + '/favicon.ico'));
+
         app.use(require('morgan')('combined'));
 
         var bodyParser = require('body-parser');
@@ -34,6 +32,8 @@ module.exports = function(c) {
 
         app.use(require('cookie-parser')());
 
+        debug('session setup');
+        var sessionTtl = (14 * 24 * 60 * 60); // 14 days
         app.use(session({
             cookie: {
                 maxAge: (sessionTtl*1000)
@@ -43,11 +43,11 @@ module.exports = function(c) {
             saveUninitialized: true,
             store: new MongoStore({
                 mongooseConnection: mongoose.connection,
-                ttl:  (14 * 24 * 60 * 60) // 14 days
+                ttl:  sessionTtl
             })
         }));
 
-        debug('setting up passport local authentication');
+        debug('passport setup');
         app.use(passport.initialize());
         app.use(passport.session());
 
@@ -62,33 +62,7 @@ module.exports = function(c) {
           });
         });
 
-        // catch 404 and forward to error handler
-        app.use(function(req, res, next) {
-            var err = new Error('Not Found');
-            err.status = 404;
-            next(err);
-        });
-
-        if (app.get('env') === 'development') {
-            // development error handler will print stacktrace
-            app.use(function(err, req, res, next) {
-                res.status(err.status || 500);
-                res.render('error', {
-                    message: err.message,
-                    error: err
-                });
-            });
-        } else {
-            // production error handler no stacktraces leaked to user
-            app.use(function(err, req, res, next) {
-                res.status(err.status || 500);
-                res.render('error', {
-                    message: err.message,
-                    error: {}
-                });
-            });
-        }
-
+        debug('setup complete');
         def.resolve(app);
     }
     require('./db')(setup,config.db);
