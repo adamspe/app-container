@@ -40,22 +40,18 @@ AppContainer.logAndExit = function(err) {
 };
 
 /**
- * @return {Object} The mongoose model for User.
+ * The mongoose model for User.
  */
-AppContainer.userModel = function() {
-    return require('./User');
-};
+AppContainer.User = require('./User');
 
 /**
  * The user resource is being held at the service level so that other api services may link up with it.
  * (E.g. modified by, created by, etc.)  But individual services may or may not need it directly.
  *
- * @parameter {int} version The current api version.
+ * @parameter {Object} version The current api version.
  * @return {Resource} The user resource (not configured into the app).
  */
-AppContainer.userResource = function(version) {
-    return require('./user-api');
-};
+AppContainer.userResource = require('./user-api');
 
 /**
  * Adds a REST resource to the application.  This utility method
