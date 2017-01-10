@@ -71,5 +71,5 @@ module.exports = function(config) {
         }
     })(users,users.update);
 
-return users;
+    return users;
 };
