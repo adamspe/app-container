@@ -4,7 +4,7 @@ var debug = require('debug')('db'),
 
 mongoose.Promise = require('q').Promise;
 
-module.exports = function(overrides){
+module.exports = function(overrides,next){
     if(mongoose.connection.readyState) {
         debug('Already connected to MongoDb');
         return;
@@ -21,8 +21,15 @@ module.exports = function(overrides){
     debug('Attempting connection to "%s"',config.uri);
     mongoose.connect(config.uri,config.options).then(function(err) {
         debug('Connected to MongoDb');
+        if(next) {
+            next();
+        }
     },function(err){
-        console.error(err);
-        process.exit(1);
+        if(next) {
+            next(err);
+        } else {
+            console.error(err);
+            process.exit(1);
+        }
     });
 };

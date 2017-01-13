@@ -17,20 +17,28 @@ var express = require('express'),
  *
  * The `pre` and `post` pipeline steps are intentionally left empty for custom app
  * initialization (e.g. setup static resource service via `pre`).
- * 
+ *
  * @param  {Object} c App configuration.
  * @return {Object} The app object.  If there is an error connecting to Mongo the process will exit.
  */
-module.exports = function(c) {
+module.exports = function(app,c) {
     var config = _.extend({},c),
-        app = express(),
         initPipeline = (config.initPipeline||{});
 
-    initPipeline.pre = initPipeline.pre||_.noop;
+    function pipelineHook(key) {
+        initPipeline[key] = initPipeline[key]||function(app){
+            debug('init '+key+' (unused)');
+        };
+    }
+
+    pipelineHook('pre');
+    pipelineHook('pre_loggers');
     initPipeline.loggers = initPipeline.loggers||function(app) {
         debug('init loggers');
         app.use(require('morgan')('combined'));
     };
+    pipelineHook('post_loggers');
+    pipelineHook('pre_parsers');
     initPipeline.parsers = initPipeline.parsers||function(app) {
         debug('init parsers');
         var bodyParser = require('body-parser');
@@ -38,6 +46,8 @@ module.exports = function(c) {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(require('cookie-parser')());
     };
+    pipelineHook('post_parsers');
+    pipelineHook('pre_session');
     initPipeline.session = initPipeline.session||function(app) {
         debug('init session');
         var session = require('express-session'),
@@ -56,6 +66,8 @@ module.exports = function(c) {
             })
         }));
     };
+    pipelineHook('post_session');
+    pipelineHook('pre_passport');
     initPipeline.passport = initPipeline.passport||function(app) {
         debug('init passport');
         var passport = require('passport'),
@@ -70,12 +82,17 @@ module.exports = function(c) {
             });
         });
     };
+    pipelineHook('post_passport');
     initPipeline.post = initPipeline.post||_.noop;
 
-    require('./db')(config.db);
-    ['pre','loggers','parsers','session','passport','post'].forEach(function(step) {
-        initPipeline[step](app);
-    });
+    ['pre',
+     'pre_loggers','loggers','post_loggers',
+     'pre_parsers','parsers','post_parsers',
+     'pre_session','session','post_session',
+     'pre_passport','passport','post_passport',
+     'post'].forEach(function(step) {
+                initPipeline[step](app);
+            });
     debug('init complete');
 
     return app;

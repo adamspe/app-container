@@ -4,9 +4,30 @@
  * @return {Promise} A promise that will be resolved with the app once a db connection is made and the app configured.
  */
 var debug = require('debug')('app-container'),
-    AppContainer = function(config) {
-        this.$app = require('./app')(config||{});
+    express = require('express'),
+    AppContainer = function() {
+        this.$app = express();
     };
+
+/**
+ * Allows for independent access to making db connections.
+ */
+AppContainer.db = require('./db');
+
+/**
+ * The mongoose model for User.
+ */
+AppContainer.User = require('./User');
+
+/**
+ * initialize the app
+ */
+AppContainer.prototype.init = function(config) {
+    config = config||{};
+    AppContainer.db(config.db);
+    require('./app-init')(this.app(),config);
+    return this;
+};
 
 /**
  * @return {Object} The express app.
@@ -39,10 +60,7 @@ AppContainer.logAndExit = function(err) {
     process.exit(1);
 };
 
-/**
- * The mongoose model for User.
- */
-AppContainer.User = require('./User');
+
 
 /**
  * The user resource is being held at the service level so that other api services may link up with it.
