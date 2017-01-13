@@ -1,4 +1,1 @@
-node_modules/
-
-bin/*.pem
-db.json
+node_modules

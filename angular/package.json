@@ -1,0 +1,17 @@
+{
+  "name": "app-container-common",
+  "version": "1.0.0",
+  "description": "angular library for app-container",
+  "author": "adamspe@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-concat": "1.x",
+    "grunt-contrib-jshint": "1.x",
+    "grunt-contrib-uglify": "2.x",
+    "grunt-contrib-watch": "1.x",
+    "grunt-html2js": "0.3.x",
+    "grunt-htmlhint": "0.9.x",
+    "matchdep": "^1.0.1"
+  }
+}
