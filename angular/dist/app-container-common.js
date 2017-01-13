@@ -1,10 +1,14 @@
 /*
  * app-container-common
- * Version: 1.0.0 - 2017-01-11
+ * Version: 1.0.0 - 2017-01-13
  */
+
+angular.module('app-container-common.filters',[
+]);
 
 angular.module('app-container-common',[
     'templates-app-container-common',
+    'app-container-common.filters',
     'app-container-common.services',
     'app-container-common.providers'
 ])

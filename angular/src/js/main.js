@@ -1,5 +1,6 @@
 angular.module('app-container-common',[
     'templates-app-container-common',
+    'app-container-common.filters',
     'app-container-common.services',
     'app-container-common.providers'
 ])
