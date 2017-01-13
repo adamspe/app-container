@@ -27,8 +27,7 @@ module.exports = function(config) {
             return u;
         });
     });
-    users.find = (function(self){
-        var superFind = self.find;
+    users.find = (function(self,superFunc){
         return function(req,res) {
             if(!req.user) {
                 return Resource.sendError(res,403,'Forbidden');
@@ -41,9 +40,9 @@ module.exports = function(config) {
                     return u;
                 });
             }
-            return superFind.apply(self,arguments);
+            return superFunc.apply(self,arguments);
         };
-    })(users);
+    })(users,users.find);
 
     // only administrators can create and delete users.
     function adminOnly(self,superFunc) {

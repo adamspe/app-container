@@ -25,7 +25,7 @@ AppContainer.User = require('./User');
 AppContainer.prototype.init = function(config) {
     config = config||{};
     AppContainer.db(config.db);
-    require('./app-init')(this.app(),config);
+    require('./app-init')(this,config);
     return this;
 };
 

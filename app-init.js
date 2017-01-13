@@ -21,8 +21,9 @@ var express = require('express'),
  * @param  {Object} c App configuration.
  * @return {Object} The app object.  If there is an error connecting to Mongo the process will exit.
  */
-module.exports = function(app,c) {
-    var config = _.extend({},c),
+module.exports = function(container,c) {
+    var app = container.app(),
+        config = _.extend({},c),
         initPipeline = (config.initPipeline||{});
 
     function pipelineHook(key) {
@@ -78,6 +79,7 @@ module.exports = function(app,c) {
         passport.deserializeUser(function(id, done) {
             debug('looking user by id %s',id);
             User.findById(id,function(err,user){
+                debug('found %s',(user ? user.email : '?'))
                 done(err,user);
             });
         });
@@ -94,6 +96,4 @@ module.exports = function(app,c) {
                 initPipeline[step](app);
             });
     debug('init complete');
-
-    return app;
 };
