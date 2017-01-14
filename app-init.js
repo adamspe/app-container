@@ -2,7 +2,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     q = require('q'),
     _ = require('lodash'),
-    debug = require('debug')('app-container');
+    debug = require('debug')('app-container'),
+    conf = require('app-container-conf');
 
 /**
  * Initial app initialization is broken down into a pipline that can be overridden
@@ -83,6 +84,39 @@ module.exports = function(container,initPipeline) {
                 done(err,user);
             });
         });
+        // CSRF
+        if(!conf.get('disableCSRF')) {
+            var uuid = require('node-uuid');
+            debug('configuring CSRF checking.');
+            app.all('*',function(req,res,next){
+                if(req.user && req.session && !req.session.csrfToken) {
+                    req.session.csrfToken = uuid.v4();
+                    debug('generated new CSRF token "%s" for user widh id "%s"', req.session.csrfToken, req.user._id.toString());
+                }
+                next();
+            });
+            function checkCSRF(req,res,next) {
+                if(req.path !== '/login' &&
+                   (!req.session ||
+                   !req.session.csrfToken ||
+                   req.session.csrfToken !== req.headers['x-csrf-token'])) {
+                   var err = new Error('Bad Request');
+                   err.status = 400;
+                   return next(err);
+                }
+                next();
+            }
+            app.put('*',checkCSRF);
+            app.post('*',checkCSRF);
+            app.delete('*',checkCSRF);
+            app.get('/logout',function(req,res,next){
+                if(req.session && req.session.csrfToken) {
+                    delete req.session.csrfToken;
+                    debug('dropped CSRF token for user with id "%s"', (req.user ? req.user._id.toString() : undefined));
+                }
+                next();
+            });
+        }
     };
     pipelineHook('post_passport');
     initPipeline.post = initPipeline.post||_.noop;
