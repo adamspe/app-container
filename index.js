@@ -4,6 +4,7 @@
  * @return {Promise} A promise that will be resolved with the app once a db connection is made and the app configured.
  */
 var debug = require('debug')('app-container'),
+    conf = require('app-container-conf'),
     express = require('express'),
     AppContainer = function() {
         this.$app = express();
@@ -22,10 +23,9 @@ AppContainer.User = require('./User');
 /**
  * initialize the app
  */
-AppContainer.prototype.init = function(config) {
-    config = config||{};
-    AppContainer.db(config.db);
-    require('./app-init')(this,config);
+AppContainer.prototype.init = function() {
+    AppContainer.db();
+    require('./app-init')(this);
     return this;
 };
 
@@ -42,7 +42,7 @@ AppContainer.prototype.app = function() {
 AppContainer.prototype.start = function() {
     var self = this;
     if(!self.$http) {
-        self.$http = require('http').createServer(self.app()).listen((process.env.PORT || 8080),'0.0.0.0',function(){
+        self.$http = require('http').createServer(self.app()).listen((conf.get('http:port') || 8080),(conf.get('http:bindAddr')||'0.0.0.0'),function(){
             console.log('Listening for HTTP requests on %s',self.$http.address().port);
         });
     } else {

@@ -1,23 +1,15 @@
 var Resource = require('odata-resource'),
+    conf = require('app-container-conf'),
     mongoose = require('mongoose'),
     _ = require('lodash'),
     debug = require('debug')('user-api');
 
 /**
- * Creates a new user REST resource.  The config object accepts the following keys
- * - uri:  The uri to bind the resource to.  Defaults to (process.env.USER_API_URI||'/api/v1/user')
- * @param {Objct} config Configuration object.
+ * Creates a new user REST resource.
  */
-module.exports = function(config) {
-    config = _.extend({
-        version: 1,
-        uri: (process.env.USER_API_URI||'/api/v1/user')
-    },(config||{}));
-
-    debug('config %s',JSON.stringify(config));
-
+module.exports = function() {
     var users = new Resource({
-            rel: config.uri,
+            rel: (conf.get('resources:$apiRoot')||'/api/v1/')+'user'
             model: require('./User'),
             $select: '-secret',
         });

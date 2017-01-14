@@ -31,13 +31,15 @@ angular.module('app-container-common.providers',[
     }];
 }])
 .provider('$appService',[function(){
+    this.apiRoot = '/api/v1/';
     this.$get = ['$resource','$http','$q','$sce',function($resource,$http,$q,$sce){
+        var apiRoot = this.apiRoot;
         return function(path,htmlAtts,eachCb) {
             var singleTxfResponse = function(data,header) {
                     var wrapped = angular.fromJson(data);
                     return new R(wrapped);
                 },
-                BaseCls = $resource(path,{},{
+                BaseCls = $resource(apiRoot+path,{},{
                 get: {
                     method: 'GET',
                     transformResponse: singleTxfResponse
