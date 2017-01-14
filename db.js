@@ -12,7 +12,7 @@ module.exports = function(next /* optional */){
     }
     var config = _.extend({
         host: 'localhost',
-        port: 27107,
+        port: 27017,
         db: 'app-db'
     },require('app-container-conf').get('database'));
     config.uri = 'mongodb://'+config.host+':'+config.port+'/'+config.db;

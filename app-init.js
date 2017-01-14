@@ -18,13 +18,13 @@ var express = require('express'),
  * The `pre` and `post` pipeline steps are intentionally left empty for custom app
  * initialization (e.g. setup static resource service via `pre`).
  *
- * @param  {Object} c App configuration.
- * @return {Object} The app object.  If there is an error connecting to Mongo the process will exit.
+ * @param  {Object} container The container
+ * @return {Object} The init pipline.
  */
-module.exports = function(container,c) {
-    var app = container.app(),
-        config = _.extend({},c),
-        initPipeline = (config.initPipeline||{});
+module.exports = function(container,initPipeline) {
+    var app = container.app();
+
+    initPipeline = initPipeline||{};
 
     function pipelineHook(key) {
         initPipeline[key] = initPipeline[key]||function(app){

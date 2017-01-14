@@ -23,9 +23,9 @@ AppContainer.User = require('./User');
 /**
  * initialize the app
  */
-AppContainer.prototype.init = function() {
+AppContainer.prototype.init = function(initPipeline) {
     AppContainer.db();
-    require('./app-init')(this);
+    require('./app-init')(this,initPipeline);
     return this;
 };
 
