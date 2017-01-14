@@ -9,7 +9,7 @@ var Resource = require('odata-resource'),
  */
 module.exports = function() {
     var users = new Resource({
-            rel: (conf.get('resources:$apiRoot')||'/api/v1/')+'user'
+            rel: (conf.get('resources:$apiRoot')||'/api/v1/')+'user',
             model: require('./User'),
             $select: '-secret',
         });
