@@ -1,3 +1,3 @@
 <div id="notification-area">
-    <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)"><span ng-bind-html="alert.msg"></span></uib-alert>
+    <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-'+alert.type" close="closeAlert($index)"><span ng-bind-html="alert.msg"></span></div>
 </div>

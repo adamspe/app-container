@@ -37,8 +37,9 @@ angular.module("js/services/confirm-dialog.html", []).run(["$templateCache", fun
 angular.module("js/services/notification-area.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("js/services/notification-area.html",
     "<div id=\"notification-area\">\n" +
-    "    <uib-alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\"><span ng-bind-html=\"alert.msg\"></span></uib-alert>\n" +
-    "</div>");
+    "    <div uib-alert ng-repeat=\"alert in alerts\" ng-class=\"'alert-'+alert.type\" close=\"closeAlert($index)\"><span ng-bind-html=\"alert.msg\"></span></div>\n" +
+    "</div>\n" +
+    "");
 }]);
 
 angular.module('app-container-common.providers',[
