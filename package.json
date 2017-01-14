@@ -23,6 +23,7 @@
     "node-uuid": "^1.4.7",
     "passport": "^0.2.2",
     "q": "^1.4.1",
-    "odata-resource": "0.2.x"
+    "odata-resource": "0.2.x",
+    "app-container-conf": "adamspe/app-container-conf"
   }
 }
