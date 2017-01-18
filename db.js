@@ -8,7 +8,7 @@ mongoose.Promise = require('q').Promise;
 module.exports = function(next /* optional */){
     if(mongoose.connection.readyState) {
         debug('Already connected to MongoDb');
-        return;
+        return (next||_.noop)();
     }
     var config = _.extend({
         host: 'localhost',
@@ -19,9 +19,7 @@ module.exports = function(next /* optional */){
     debug('Attempting connection to "%s"',config.uri);
     mongoose.connect(config.uri,config.options).then(function(err) {
         debug('Connected to MongoDb');
-        if(next) {
-            next();
-        }
+        (next||_.noop)();
     },function(err){
         if(next) {
             next(err);
