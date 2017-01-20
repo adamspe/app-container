@@ -21,6 +21,11 @@ AppContainer.db = require('./db');
 AppContainer.User = require('./User');
 
 /**
+ * Basic re-usable login for utilities
+ */
+AppContainer.login = require('./login');
+
+/**
  * initialize the app
  */
 AppContainer.prototype.init = function(initPipeline) {
