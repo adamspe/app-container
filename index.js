@@ -8,6 +8,8 @@ var debug = require('debug')('app-container'),
     express = require('express'),
     AppContainer = function() {
         this.$app = express();
+        this.$http = require('http').createServer(self.app());
+        this.$started = false;
     };
 
 /**
@@ -42,12 +44,30 @@ AppContainer.prototype.app = function() {
 };
 
 /**
+ * @return {Object} The http server instance.
+ */
+AppContainer.prototype.http = function() {
+    return this.$http;
+};
+
+/**
+ * @return {Object} The express-ws results.
+ */
+AppContainer.prototype.enableWebSockets = function() {
+    if(!this.$ws) {
+        this.$ws = require('express-ws')(this.app(),this.http());
+    }
+    return this.$ws;
+};
+
+/**
  * Starts the application listening on HTTP.
  */
 AppContainer.prototype.start = function() {
     var self = this;
-    if(!self.$http) {
-        self.$http = require('http').createServer(self.app()).listen((conf.get('http:port') || 8080),(conf.get('http:bindAddr')||'0.0.0.0'),function(){
+    if(!self.$started) {
+        self.$http.listen((conf.get('http:port') || 8080),(conf.get('http:bindAddr')||'0.0.0.0'),function(){
+            self.$started = true;
             console.log('Listening for HTTP requests on %s',self.$http.address().port);
         });
     } else {
