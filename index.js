@@ -8,7 +8,7 @@ var debug = require('debug')('app-container'),
     express = require('express'),
     AppContainer = function() {
         this.$app = express();
-        this.$http = require('http').createServer(self.app());
+        this.$http = require('http').createServer(this.$app);
         this.$started = false;
     };
 
