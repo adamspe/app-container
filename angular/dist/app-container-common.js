@@ -1,16 +1,29 @@
 /*
  * app-container-common
- * Version: 1.0.0 - 2017-01-14
+ * Version: 1.0.0 - 2017-01-28
  */
+
+angular.module('app-container-common.directives',[
+])
+.directive('spinner',[function(){
+    return {
+        restrict: 'AEC',
+        template: '<i ng-if="working()" class="fa fa-spinner fa-pulse fa-2x"></i>',
+        scope: {
+            working: '&isWorking'
+        }
+    };
+}]);
 
 angular.module('app-container-common.filters',[
 ]);
 
 angular.module('app-container-common',[
+    'app-container-common.providers',
     'templates-app-container-common',
     'app-container-common.filters',
     'app-container-common.services',
-    'app-container-common.providers'
+    'app-container-common.directives'
 ])
 .config(['$logProvider',function($logProvider) {
     $logProvider.debugEnabled(window.location.hash && window.location.hash.match(/^#.*#debug/));
@@ -74,10 +87,18 @@ angular.module('app-container-common.providers',[
         };
     }];
 }])
-.provider('$appService',[function(){
+.provider('$apiConfig',[function(){
     this.apiRoot = '/api/v1/';
-    this.$get = ['$resource','$http','$q','$sce',function($resource,$http,$q,$sce){
-        var apiRoot = this.apiRoot;
+    this.$get = [function(){
+        return {
+            apiRoot: this.apiRoot
+        };
+    }];
+}])
+.provider('$appService',[function(){
+    this.$get = ['$log','$resource','$http','$q','$sce','$apiConfig',function($log,$resource,$http,$q,$sce,$apiConfig){
+        $log.debug('$apiConfig',$apiConfig);
+        var apiRoot = $apiConfig.apiRoot;
         return function(path,htmlAtts,eachCb) {
             var singleTxfResponse = function(data,header) {
                     var wrapped = angular.fromJson(data);
@@ -236,4 +257,46 @@ angular.module('app-container-common.services',[
         }
     };
     return service;
+}])
+.factory('WebSocketConnection',['$log','$window','$apiConfig',function($log,$window,$apiConfig){
+    var WebSocket = $window.WebSocket || $window.MozWebSocket;
+    function WebSocketConnection(path,onOpen) {
+        this.$wsUrl = 'ws://'+$window.location.host+(path.charAt(0) === '/' ? path : ($apiConfig.apiRoot)+path);
+        $log.debug('WebSocketConnection.wsUrl',this.$wsUrl);
+        this.$cx = new WebSocket(this.$wsUrl);
+        if(typeof(onOpen) === 'function') {
+            this.$cx.onopen = onOpen;
+        }
+    }
+    WebSocketConnection.prototype.url = function() {
+        return this.$wsUrl;
+    };
+    WebSocketConnection.prototype.connection = function() {
+        return this.$cx;
+    };
+    WebSocketConnection.prototype.onMessage = function (handler) {
+        var self = this;
+        self.connection().onmessage = function(event) {
+            $log.debug('WebSocketConnection.message',event);
+            var msg = event.data;
+            if(typeof(msg) === 'string' && msg.charAt(0) === '{') {
+                msg = JSON.parse(msg);
+            }
+            handler(msg,event);
+        };
+    };
+    WebSocketConnection.prototype.send = function(msg) {
+        if(typeof(msg) === 'object') {
+            msg = JSON.stringify(msg);
+        }
+        $log.debug('WebSocketConnection.send',msg);
+        this.connection().send(msg);
+    };
+    WebSocketConnection.prototype.connectionCloser = function() {
+        var self = this;
+        return function() {
+            self.connection().close();
+        };
+    };
+    return WebSocketConnection;
 }]);

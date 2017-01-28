@@ -30,10 +30,18 @@ angular.module('app-container-common.providers',[
         };
     }];
 }])
-.provider('$appService',[function(){
+.provider('$apiConfig',[function(){
     this.apiRoot = '/api/v1/';
-    this.$get = ['$resource','$http','$q','$sce',function($resource,$http,$q,$sce){
-        var apiRoot = this.apiRoot;
+    this.$get = [function(){
+        return {
+            apiRoot: this.apiRoot
+        };
+    }];
+}])
+.provider('$appService',[function(){
+    this.$get = ['$log','$resource','$http','$q','$sce','$apiConfig',function($log,$resource,$http,$q,$sce,$apiConfig){
+        $log.debug('$apiConfig',$apiConfig);
+        var apiRoot = $apiConfig.apiRoot;
         return function(path,htmlAtts,eachCb) {
             var singleTxfResponse = function(data,header) {
                     var wrapped = angular.fromJson(data);
