@@ -1,0 +1,16 @@
+<div class="container-fluid panes static">
+    <div class="row">
+        <div class="pane headings" ng-class="[$openLeftCols]">
+            <div class="pane-contents">
+                <div class="pane-set-header" ng-transclude="header"></div>
+                <div class="inner" ng-transclude="left"></div>
+                <div class="pane-set-footer" ng-transclude="footer"></div>
+            </div>
+        </div>
+        <div class="pane contents" ng-class="[$openRightCols]">
+            <div class="pane-contents">
+                <div class="inner" ng-transclude="right"></div>
+            </div>
+        </div>
+    </div>
+</div>

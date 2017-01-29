@@ -3,7 +3,8 @@ angular.module('app-container-common',[
     'templates-app-container-common',
     'app-container-common.filters',
     'app-container-common.services',
-    'app-container-common.directives'
+    'app-container-common.directives',
+    'app-container-common.panes'
 ])
 .config(['$logProvider',function($logProvider) {
     $logProvider.debugEnabled(window.location.hash && window.location.hash.match(/^#.*#debug/));

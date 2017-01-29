@@ -1,0 +1,194 @@
+.panes {
+    $pane-element-left-padding: 10px;
+    $pane-element-padding: 5px 20px 5px $pane-element-left-padding;
+    $pane-set-header-height: 60px;
+    $pane-set-header-with-banner-height: 80px;
+    $pane-set-footer-height: 61px;
+    .pane-set-header {
+        height: $pane-set-header-height;
+        &.with-banner {
+            height: $pane-set-header-with-banner-height;
+        }
+        padding: $pane-element-padding;
+        //color: $color-fg;
+        h1,h2,h3,h4,h5 {
+            //color: $color-fg;
+            display: inline-block;
+            margin: 10px 0px;
+            .info-icon-wrapper {
+                font-size: 0.8em;
+            }
+        }
+    }
+    .pane {
+        $pane-outside-padding: 10px;
+        padding-top: $pane-outside-padding;
+        padding-bottom: $pane-outside-padding;
+
+        transition-duration: 0.5s;
+        transition-property: width;
+        transition-timing-function: ease-in-out;
+
+        &.col-xs-0 {
+            display: none;
+            @media(min-width: $screen-sm-min) {
+                display:inherit;
+            }
+        }
+        &.col-sm-0,
+        &.col-md-0,
+        &.col-lg-0 {
+            width: 0%;
+        }
+        &.headings {
+            padding-left: $pane-outside-padding;
+            padding-right: ($pane-outside-padding / 2);
+            &.col-xs-12 {
+                padding-right: $pane-outside-padding;
+            }
+            // this assumes there will ALWAYS be a footer
+            .pane-contents .inner {
+                height: calc(100% - #{$pane-set-footer-height});
+            }
+            .pane-set-header + .inner {
+                height: calc(100% - #{$pane-set-footer-height + $pane-set-header-height});
+            }
+            // TODO - height with banner
+            .pane-set-header.with-banner + .inner {
+                height: calc(100% - #{$pane-set-footer-height + $pane-set-header-with-banner-height});
+            }
+        }
+        &.contents {
+            padding-left: ($pane-outside-padding / 2);
+            padding-right: $pane-outside-padding;
+            .pane-contents .inner {
+                height: 100%;
+                >info-panel:first-child,
+                >info-icon:first-child {
+                    .info-icon-wrapper {
+                        position: absolute;
+                        top: 0px;
+                        right: ($pane-outside-padding * 4);
+                        font-size: 1.5em;
+                    }
+                }
+                // this may not be generally globally applicable which is why it's
+                // so specifically focused.
+                // such tables are used in panels and if they are imediately under a
+                // panel heading AND they don't themselves have any headings
+                // then putting a top border on the first row looks funny.
+                .panel-body >div:first-child >table:first-child.table.table-condensed {
+                    >tbody:first-child {
+                        >tr:first-of-type >td {
+                            border-top: none;
+                        }
+                    }
+                }
+            }
+        }
+        .pane-contents {
+            background-color: #fff;
+            border-radius: 5px;
+            height: 88vh;
+            border: 1px solid #ccc;
+            position: relative;
+            .inner {
+                overflow-y: auto;
+                overflow-x: hidden;
+                // put lone buttons not immediately associated with above panels in
+                // a div with this class.
+                div.action-trailer {
+                    &::before {
+                        content: " ";
+                        display: table;
+                    }
+                    border-top: 2px solid #d9d9d9;
+                    padding-top: 10px;
+                }
+            }
+            .pane-set-footer {
+                padding: $pane-element-left-padding;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                left: 0;
+                height: $pane-set-footer-height;
+            }
+        }
+        &.headings {
+            // can happen in different types of parents
+            .pane-status {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+            }
+            .pane-heading {
+                padding: $pane-element-padding;
+                border-bottom: 1px solid #aaa;
+                position: relative;
+                &:hover {
+                    cursor: pointer;
+                }
+                &.active,&:hover {
+                    background-color: #eee;
+                }
+                &.not-selectable {
+                    &:hover,&.active {
+                        cursor: default;
+                        background-color: transparent;
+                    }
+                }
+                &.active::after {
+                    color: #000;
+                    font-family: FontAwesome;
+                    content: '\f054';
+                    position: absolute;
+                    right: 5px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+                .pane-title {
+                    label {
+                        //color: $color-fg;
+                    }
+                }
+            }
+        }
+        &.contents {
+            a.contents-close {
+                position: absolute;
+                top: $pane-outside-padding;
+                right: ($pane-outside-padding * 2);
+                z-index: 800;
+                font-size: 1.5em;
+                //color: $color-fg;
+                &:hover, &:focus, &:visited {
+                    text-decoration: none;
+                }
+                &::before {
+                    font-family: FontAwesome;
+                    content: '\f00d';
+                }
+            }
+            &.col-xs-0, .col-sm-0, .col-md-0, .col-lg-0 {
+                .pane-contents, a.contents-close {
+                    display: none;
+                }
+            }
+            &.closeable {
+                // when when contents are closeable need to make room for close icon.
+                .pane-contents {
+                    padding: ($pane-element-left-padding + 25px) $pane-element-left-padding $pane-element-left-padding $pane-element-left-padding;
+                }
+            }
+        }
+    }
+    &.static {
+        .pane {
+            .pane-contents .inner {
+                padding-left: $pane-element-left-padding;
+                padding-right: $pane-element-left-padding;
+            }
+        }
+    }
+}

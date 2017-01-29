@@ -1,0 +1,17 @@
+<div class="container-fluid panes">
+    <div class="row">
+        <div class="pane headings" ng-class="[openLeftCols]">
+            <div class="pane-contents">
+                <div class="pane-set-header" ng-transclude="header"></div>
+                <ul class="inner list-unstyled" ng-transclude></ul>
+                <div class="pane-set-footer" ng-transclude="footer"></div>
+            </div>
+        </div>
+        <div class="pane contents closeable" ng-class="[openRightCols]">
+            <a href class="contents-close" ng-click="paneset.closeContents()"></a>
+            <div class="pane-contents">
+                <div class="inner" ng-repeat="pane in paneset.panes" ng-show="pane.state.active" pane-content-transclude="pane"></div>
+            </div>
+        </div>
+    </div>
+</div>
