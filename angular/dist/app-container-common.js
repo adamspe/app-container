@@ -65,6 +65,9 @@ angular.module('app-container-common.panes', [
                     s.active = false;
                 });
             },
+            isActive: function(paneId){
+                return (states[paneId] && states[paneId].active);
+            },
             anyActive: function(setId) {
                 return service.getStates(setId).reduce(function(active,state) {
                     return active||state.active;
