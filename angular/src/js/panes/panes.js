@@ -196,26 +196,19 @@ angular.module('app-container-common.panes', [
         require: '^paneSet',
         transclude: true,
         link: function($scope,$elm,$attrs,$paneSetCtrl,$transclude) {
-            var pane = $scope.$eval($attrs.paneContentTransclude).pane;
-            $scope.pane = pane;
-            $scope.$watch('pane.state.active',function(active){
-                $elm.html('');
-                pane.headingElement = null;
-                pane.$transcludeFn(pane.$parent,function(contents,scope){
-                    angular.forEach(contents,function(node,i){
-                        var h;
-                        if(!pane.headingElement && isPaneHeading(node)) {
-                            pane.headingElement = node;
-                        } else {
-                            // so nested controllers can bind dynamic content to the heading allow one more level
-                            if(!pane.headingElement && (h = getPaneHeading(node))) {
-                                pane.headingElement = h;
-                            }
-                            if(active){
-                                $elm.append(node);
-                            }
+            var pane = $scope.pane = $scope.$eval($attrs.paneContentTransclude).pane;
+            pane.$transcludeFn(pane.$parent,function(contents/*,scope*/){
+                angular.forEach(contents,function(node,i){
+                    var h;
+                    if(!pane.headingElement && isPaneHeading(node)) {
+                        pane.headingElement = node;
+                    } else {
+                        // so nested controllers can bind dynamic content to the heading allow one more level
+                        if(!pane.headingElement && (h = getPaneHeading(node))) {
+                            pane.headingElement = h;
                         }
-                    });
+                        $elm.append(node);
+                    }
                 });
             });
         }
