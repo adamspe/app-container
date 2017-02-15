@@ -1,6 +1,6 @@
 /*
  * app-container-common
- * Version: 1.0.0 - 2017-02-07
+ * Version: 1.0.0 - 2017-02-13
  */
 
 angular.module('app-container-common.directives',[
@@ -490,6 +490,9 @@ angular.module('app-container-common.providers',[
                 });
                 return def.promise;
             };
+            R.$basePath = (function(fullPath){
+                return fullPath.substring(0,fullPath.lastIndexOf('/'));
+            })(apiRoot+path);
 
             return R;
         };

@@ -126,6 +126,9 @@ angular.module('app-container-common.providers',[
                 });
                 return def.promise;
             };
+            R.$basePath = (function(fullPath){
+                return fullPath.substring(0,fullPath.lastIndexOf('/'));
+            })(apiRoot+path);
 
             return R;
         };
