@@ -1,3 +1,8 @@
+/**
+ * Deprecated: This code relies on bootstrap CSS and since moving to angular material
+ * would be outside of the set of UI elements that should be considered.
+ * leaving for now.
+ */
 angular.module('app-container-common.panes', [
 ])
 .service('PaneStateService',[function(){

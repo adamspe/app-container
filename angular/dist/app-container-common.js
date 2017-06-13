@@ -1,16 +1,20 @@
 /*
  * app-container-common
- * Version: 1.0.0 - 2017-02-13
+ * Version: 1.0.0 - 2017-06-13
  */
 
 angular.module('app-container-common.directives',[
 ])
-.directive('spinner',[function(){
+.directive('spinner',['$log',function($log){
     return {
         restrict: 'AEC',
-        template: '<i ng-if="working()" class="fa fa-spinner fa-pulse fa-2x"></i>',
+        template: '<md-progress-circular ng-if="working()" md-mode="indeterminate" class="{{class}}"></md-progress-circular>',
         scope: {
             working: '&isWorking'
+        },
+        link: function($scope,$element,$attrs){
+            $log.warn('spinner directive is deprecated, use md-progress-circular directly');
+            $scope.class = $attrs.class||'md-accent';
         }
     };
 }]);
@@ -30,6 +34,11 @@ angular.module('app-container-common',[
     $logProvider.debugEnabled(window.location.hash && window.location.hash.match(/^#.*#debug/));
 }]);
 
+/**
+ * Deprecated: This code relies on bootstrap CSS and since moving to angular material
+ * would be outside of the set of UI elements that should be considered.
+ * leaving for now.
+ */
 angular.module('app-container-common.panes', [
 ])
 .service('PaneStateService',[function(){
@@ -287,7 +296,7 @@ angular.module('app-container-common.panes', [
     };
 }]);
 
-angular.module('templates-app-container-common', ['js/panes/pane.html', 'js/panes/paneset.html', 'js/panes/static-pane-set.html', 'js/services/confirm-dialog.html', 'js/services/notification-area.html']);
+angular.module('templates-app-container-common', ['js/panes/pane.html', 'js/panes/paneset.html', 'js/panes/static-pane-set.html']);
 
 angular.module("js/panes/pane.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("js/panes/pane.html",
@@ -334,30 +343,6 @@ angular.module("js/panes/static-pane-set.html", []).run(["$templateCache", funct
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("js/services/confirm-dialog.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("js/services/confirm-dialog.html",
-    "<div class=\"modal-header\">\n" +
-    "    <span ng-if=\"!contents.noIcon\"><i class=\"fa fa-{{contents.icon||'exclamation-triangle'}} fa-{{contents.iconSize||'3'}}x\"></i></span>\n" +
-    "    <h4>{{contents.question}}</h4>\n" +
-    "</div>\n" +
-    "<div class=\"modal-body\">\n" +
-    "    <p ng-if=\"contents.warning\" class=\"text-danger\">Warning: {{contents.warning}}</p>\n" +
-    "    <p ng-if=\"contents.more\">{{contents.more}}</p>\n" +
-    "</div>\n" +
-    "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-default\" ng-click=\"no()\">{{contents.noText||'No'}}</button>\n" +
-    "    <button class=\"btn btn-default\" ng-click=\"yes()\">{{contents.yesText||'Yes'}}</button>\n" +
-    "</div>");
-}]);
-
-angular.module("js/services/notification-area.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("js/services/notification-area.html",
-    "<div id=\"notification-area\">\n" +
-    "    <div uib-alert ng-repeat=\"alert in alerts\" ng-class=\"'alert-'+alert.type\" close=\"closeAlert($index)\"><span ng-bind-html=\"alert.msg\"></span></div>\n" +
     "</div>\n" +
     "");
 }]);
@@ -502,68 +487,35 @@ angular.module('app-container-common.providers',[
 angular.module('app-container-common.services',[
     'app-container-common.providers'
 ])
-.controller('ConfirmDialogCtrl',['$scope','$uibModalInstance','contents',function($scope,$uibModalInstance,contents){
-    $scope.contents = contents;
-    $scope.yes = $uibModalInstance.close;
-    $scope.no = $uibModalInstance.dismiss;
-}])
-.factory('DialogService',['$q','$uibModal',function($q,$uibModal){
+.factory('DialogService',['$q','$log','$mdDialog',function($q,$log,$mdDialog){
     var service = {
         confirm: function(contents) {
-            var def = $q.defer();
-            $uibModal.open({
-                controller: 'ConfirmDialogCtrl',
-                templateUrl: 'js/services/confirm-dialog.html',
-                windowClass: 'confirm-dialog',
-                backdrop: 'static',
-                keyboard: false,
-                resolve: {
-                    contents: function() { return contents; }
-                }
-            }).result.then(def.resolve,def.reject);
+            $log.warn('DialogService deprecated: use $mdDialog directly.');
+            var def = $q.defer(),
+                confirm = $mdDialog.confirm()
+                .title(contents.question)
+                .textContent(contents.warning)
+                .ariaLabel(contents.ariaLabel)
+                .ok(contents.yesText||'Yes')
+                .cancel(contents.noText||'No');
+            $mdDialog.show(confirm).then(def.resolve,def.reject);
             return def.promise;
         }
     };
     return service;
 }])
-.directive('notificationArea',['NotificationService',function(NotificationService){
-    return {
-        restrict: 'E',
-        templateUrl: 'js/services/notification-area.html',
-        link: function($scope) {
-            $scope.alerts = NotificationService.getAlerts();
-            $scope.closeAlert = NotificationService.closeAlert;
-        }
-    };
-}])
-.factory('NotificationService',['$log','$timeout','$sce',function($log,$timeout,$sce){
-    var alerts = [];
-    var closeAlert = function(index){
-        alerts.splice(index,1);
-    };
+.factory('NotificationService',['$log','$timeout','$sce','$mdToast',function($log,$timeout,$sce,$mdToast){
     var service = {
-        closeAlert: closeAlert,
-        getAlerts: function() {
-            return alerts;
-        },
         addError: function(error) {
-            var errMessage = error && error.statusText ? error.statusText : '';
+            var errMessage = typeof(error) === 'string' ? error :
+                error && error.statusText ? error.statusText : '';
             if(error && error.data && error.data.message) {
                 errMessage += ' : '+error.data.message;
             }
-            alerts.push ({type:'danger',msg:$sce.trustAsHtml(errMessage)});
+            $mdToast.show($mdToast.simple().textContent(errMessage).position('bottom right').action('OK').highlightAction(true).highlightClass('md-warn').hideDelay(0));
         },
         addInfo: function (message) {
-            message = $sce.trustAsHtml(message);
-            var ttl = 5000;
-            if ( arguments.length > 1 ) { ttl = arguments[1]; }
-            var index = (alerts.push({type:'success',msg:message})-1);
-            if ( ttl > 0 ) {
-              $timeout(function(){closeAlert(index);},ttl);
-            }
-        },
-        clear: function() {
-          alerts.length = 0;
+            $mdToast.show($mdToast.simple().textContent(message).position('bottom right'));
         }
     };
     return service;

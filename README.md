@@ -1,8 +1,8 @@
-#app-container
+# app-container
 
-##app-container module convention
+## app-container module convention
 
-###index.js
+### index.js
 
 ```
 var AppContainer = require('app-container'),
@@ -21,13 +21,13 @@ var AppContainer = require('app-container'),
 module.exports = appModule;
 ```
 
-###start.js (convention only)
+### start.js (convention only)
 
 ```
 require('./index').container().start();
 ```
 
-###package.json (fragment)
+### package.json (fragment)
 
 ```
 "main": "index.js",

@@ -1,68 +1,35 @@
 angular.module('app-container-common.services',[
     'app-container-common.providers'
 ])
-.controller('ConfirmDialogCtrl',['$scope','$uibModalInstance','contents',function($scope,$uibModalInstance,contents){
-    $scope.contents = contents;
-    $scope.yes = $uibModalInstance.close;
-    $scope.no = $uibModalInstance.dismiss;
-}])
-.factory('DialogService',['$q','$uibModal',function($q,$uibModal){
+.factory('DialogService',['$q','$log','$mdDialog',function($q,$log,$mdDialog){
     var service = {
         confirm: function(contents) {
-            var def = $q.defer();
-            $uibModal.open({
-                controller: 'ConfirmDialogCtrl',
-                templateUrl: 'js/services/confirm-dialog.html',
-                windowClass: 'confirm-dialog',
-                backdrop: 'static',
-                keyboard: false,
-                resolve: {
-                    contents: function() { return contents; }
-                }
-            }).result.then(def.resolve,def.reject);
+            $log.warn('DialogService deprecated: use $mdDialog directly.');
+            var def = $q.defer(),
+                confirm = $mdDialog.confirm()
+                .title(contents.question)
+                .textContent(contents.warning)
+                .ariaLabel(contents.ariaLabel)
+                .ok(contents.yesText||'Yes')
+                .cancel(contents.noText||'No');
+            $mdDialog.show(confirm).then(def.resolve,def.reject);
             return def.promise;
         }
     };
     return service;
 }])
-.directive('notificationArea',['NotificationService',function(NotificationService){
-    return {
-        restrict: 'E',
-        templateUrl: 'js/services/notification-area.html',
-        link: function($scope) {
-            $scope.alerts = NotificationService.getAlerts();
-            $scope.closeAlert = NotificationService.closeAlert;
-        }
-    };
-}])
-.factory('NotificationService',['$log','$timeout','$sce',function($log,$timeout,$sce){
-    var alerts = [];
-    var closeAlert = function(index){
-        alerts.splice(index,1);
-    };
+.factory('NotificationService',['$log','$timeout','$sce','$mdToast',function($log,$timeout,$sce,$mdToast){
     var service = {
-        closeAlert: closeAlert,
-        getAlerts: function() {
-            return alerts;
-        },
         addError: function(error) {
-            var errMessage = error && error.statusText ? error.statusText : '';
+            var errMessage = typeof(error) === 'string' ? error :
+                error && error.statusText ? error.statusText : '';
             if(error && error.data && error.data.message) {
                 errMessage += ' : '+error.data.message;
             }
-            alerts.push ({type:'danger',msg:$sce.trustAsHtml(errMessage)});
+            $mdToast.show($mdToast.simple().textContent(errMessage).position('bottom right').action('OK').highlightAction(true).highlightClass('md-warn').hideDelay(0));
         },
         addInfo: function (message) {
-            message = $sce.trustAsHtml(message);
-            var ttl = 5000;
-            if ( arguments.length > 1 ) { ttl = arguments[1]; }
-            var index = (alerts.push({type:'success',msg:message})-1);
-            if ( ttl > 0 ) {
-              $timeout(function(){closeAlert(index);},ttl);
-            }
-        },
-        clear: function() {
-          alerts.length = 0;
+            $mdToast.show($mdToast.simple().textContent(message).position('bottom right'));
         }
     };
     return service;

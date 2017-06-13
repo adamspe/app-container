@@ -1,11 +1,15 @@
 angular.module('app-container-common.directives',[
 ])
-.directive('spinner',[function(){
+.directive('spinner',['$log',function($log){
     return {
         restrict: 'AEC',
-        template: '<i ng-if="working()" class="fa fa-spinner fa-pulse fa-2x"></i>',
+        template: '<md-progress-circular ng-if="working()" md-mode="indeterminate" class="{{class}}"></md-progress-circular>',
         scope: {
             working: '&isWorking'
+        },
+        link: function($scope,$element,$attrs){
+            $log.warn('spinner directive is deprecated, use md-progress-circular directly');
+            $scope.class = $attrs.class||'md-accent';
         }
     };
 }]);
