@@ -16,9 +16,11 @@ angular.module('app-container-common.providers',[
                 var def = $q.defer();
                 $t_promise = $timeout(function(){
                     $log.debug('typeaheadFinder',s);
-                    resource.query({
-                        $filter: filterGenerator(s)
-                    },function(response) {
+                    var params = filterGenerator(s),
+                        input = typeof(params) === 'string' ? {
+                            $filter: params
+                        } : params;
+                    resource.query(input,function(response) {
                         def.resolve(response.list.filter(filterFunctor));
                     });
                     def.promise.then(function(list) {
