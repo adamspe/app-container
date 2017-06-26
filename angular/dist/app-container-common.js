@@ -1,6 +1,6 @@
 /*
  * app-container-common
- * Version: 1.0.0 - 2017-06-15
+ * Version: 1.0.0 - 2017-06-26
  */
 
 angular.module('app-container-common.directives',[
@@ -514,11 +514,13 @@ angular.module('app-container-common.services',[
             if(error && error.data && error.data.message) {
                 errMessage += ' : '+error.data.message;
             }
-            $mdToast.show($mdToast.simple().textContent(errMessage).position('bottom right').action('OK').highlightAction(true).highlightClass('md-warn').hideDelay(0));
+            return $mdToast.show($mdToast.simple().textContent(errMessage).position('bottom').action('OK').highlightAction(true).highlightClass('md-warn').hideDelay(0));
         },
         addInfo: function (message) {
-            $mdToast.show($mdToast.simple().textContent(message).position('bottom right'));
-        }
+            return $mdToast.show($mdToast.simple().textContent(message).position('bottom'));
+        },
+        hideToast: $mdToast.hide, // resolve existing promise
+        cancelToast: $mdToast.cancel // reject existing promise
     };
     return service;
 }])
